@@ -38,10 +38,8 @@ class MyFrame(wx.Frame):
         hbox3.Add(vbox2,1,wx.EXPAND)
 
         self.lc = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
-        self.lc.InsertColumn(0, 'Job ID')
-        self.lc.InsertColumn(1, 'Queued Job')
-        self.lc.SetColumnWidth(0, 140)
-        self.lc.SetColumnWidth(1, 153)
+        self.lc.InsertColumn(0, 'Queue ID')
+        self.lc.SetColumnWidth(0, 300)
         hbox4.Add(self.lc,1,wx.ALL|wx.EXPAND)
 
         vbox.Add(hbox1,1,wx.ALL)        
@@ -63,6 +61,7 @@ class MyFrame(wx.Frame):
     def showPrinter(self,event):
         printer_name = self.combo.GetValue()
         wx.MessageBox(printer_name + " is selected.",'Info', wx.OK | wx.ICON_ERROR)
+        self.getQueues()
 
     def loadFile(self, event):
         self.filename = wx.FileSelector(default_path=os.getcwd())
@@ -85,6 +84,13 @@ class MyFrame(wx.Frame):
                 print file
                 command = "lpr -P "+printer_name+" "+self.filename
                 os.system(command)
+
+    def getQueues(self):
+        status, output = commands.getstatusoutput("lpstat")
+        queueIDs = [queue.split()[0] for queue in output.split("\n")]
+        for queueID in queueIDs:
+            self.lc.InsertStringItem(queueIDs.index(queueID),queueID)
+
 
     def getPrinters(self):
         status, output = commands.getstatusoutput("lpstat -s")
