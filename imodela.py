@@ -92,13 +92,24 @@ class MyFrame(wx.Frame):
 
     def getQueues(self,event):
         status, output = commands.getstatusoutput("lpstat")
+        if not output:
+            print "No queue"
+            return
         queueIDs = [queue.split()[0] for queue in output.split("\n")]
         self.lc.DeleteAllItems()
         for queueID in queueIDs:
             self.lc.InsertStringItem(queueIDs.index(queueID),queueID)
 
     def cancelQueues(self,event):
-        return 
+        status, output = commands.getstatusoutput("lpstat")
+        if not output:
+            print "No queue"
+            return
+        queueIDs = [queue.split()[0] for queue in output.split("\n")]
+        for queueID in queueIDs:
+            command = "cancel "+queueID
+            os.system(command)
+        self.lc.DeleteAllItems()
 
     def getPrinters(self):
         status, output = commands.getstatusoutput("lpstat -s")
