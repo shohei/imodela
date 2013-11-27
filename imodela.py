@@ -17,6 +17,7 @@ class MyFrame(wx.Frame):
 
         vbox1 = wx.BoxSizer(wx.VERTICAL)
         vbox2 = wx.BoxSizer(wx.VERTICAL)
+        vbox3 = wx.BoxSizer(wx.VERTICAL)
 
         hbox1.Add(wx.StaticText(self,-1,"Connect to:"),1,wx.ALL,5)
         printer_names = self.getPrinters()
@@ -39,8 +40,11 @@ class MyFrame(wx.Frame):
 
         self.lc = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
         self.lc.InsertColumn(0, 'Queue ID')
-        self.lc.SetColumnWidth(0, 300)
+        self.lc.SetColumnWidth(0, 250)
+        vbox3.Add(wx.Button(self,5,"refresh job queue"),1,wx.ALL,5)
+        vbox3.Add(wx.Button(self,6,"cancel all jobs"),1,wx.ALL,5)
         hbox4.Add(self.lc,1,wx.ALL|wx.EXPAND)
+        hbox4.Add(vbox3,1,wx.ALL)
 
         vbox.Add(hbox1,1,wx.ALL)        
         vbox.Add(hbox2,1,wx.ALL)
@@ -52,6 +56,8 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON,self.sendRml,id=2)
         self.Bind(wx.EVT_BUTTON,self.showPrinter,id=3)
         self.Bind(wx.EVT_BUTTON,self.sendGcode,id=4)
+        self.Bind(wx.EVT_BUTTON,self.getQueues,id=5)
+        self.Bind(wx.EVT_BUTTON,self.cancelQueues,id=6)
 
     def sendGcode(self,event):
         printer_name = self.combo.GetValue()
@@ -61,7 +67,6 @@ class MyFrame(wx.Frame):
     def showPrinter(self,event):
         printer_name = self.combo.GetValue()
         wx.MessageBox(printer_name + " is selected.",'Info', wx.OK | wx.ICON_ERROR)
-        self.getQueues()
 
     def loadFile(self, event):
         self.filename = wx.FileSelector(default_path=os.getcwd())
@@ -85,12 +90,15 @@ class MyFrame(wx.Frame):
                 command = "lpr -P "+printer_name+" "+self.filename
                 os.system(command)
 
-    def getQueues(self):
+    def getQueues(self,event):
         status, output = commands.getstatusoutput("lpstat")
         queueIDs = [queue.split()[0] for queue in output.split("\n")]
+        self.lc.DeleteAllItems()
         for queueID in queueIDs:
             self.lc.InsertStringItem(queueIDs.index(queueID),queueID)
 
+    def cancelQueues(self,event):
+        return 
 
     def getPrinters(self):
         status, output = commands.getstatusoutput("lpstat -s")
