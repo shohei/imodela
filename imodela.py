@@ -121,6 +121,8 @@ class MyFrame(wx.Frame):
 class MyApp(wx.App):
     def OnInit(self):
         frame = MyFrame(None,-1,'iModela communicator')
+        menubar = wx.MenuBar()
+        frame.SetMenuBar(menubar)
         frame.Show()
         return True
 
