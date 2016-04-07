@@ -10,8 +10,9 @@ from setuptools import setup
 APP = ['imodela.py']
 DATA_FILES = []
 OPTIONS = {'argv_emulation': True,
- 'iconfile': 'icon.icns'}
-
+ 'iconfile': 'icon.icns',
+'plist': {'CFBundleShortVersionString':'1.0.0',}
+}
 setup(
     app=APP,
     data_files=DATA_FILES,
